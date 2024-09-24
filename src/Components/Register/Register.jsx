@@ -150,7 +150,7 @@ const Register = () => {
               transition: Bounce,
           });
           }
-          //......set  loading
+          //......set  loading....
           setLoading(false);
         });
     }

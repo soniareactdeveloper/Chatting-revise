@@ -20,6 +20,8 @@ const Register = () => {
     setConfirmShow(!confirmShow);
   }
 
+  // form validation
+  
 
 
 

@@ -1,4 +1,5 @@
-import Register from "../Components/LogIn/Register/Register"
+import Register from "../Components/Register/Register"
+
 
 
 const RegisterPage = () => {

@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ImEye } from "react-icons/im";
 import { ImEyeBlocked } from "react-icons/im";
 import { useState } from 'react';
 import { BarLoader } from "react-spinners";
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 const Register = () => {
   // state declaration
@@ -19,6 +20,10 @@ const Register = () => {
   const [passworderr, setPassworderr]                = useState('');
   const [confirmPassword, setConfirmPassword]        = useState('');
   const [confirmPassworderr, setConfirmPassworderr]  = useState('');
+
+  // ====================== firebase functions =================
+  const auth        = getAuth();
+  const navigate    = useNavigate();
 
   // password icon function
   const handleShow = () => {
@@ -70,26 +75,84 @@ const Register = () => {
     }
     if (!confirmPassword) {
       setConfirmPassworderr('Confirm Password is required');
-    }else {
+    }
+    if (password !== confirmPassword) {
+      setConfirmPassworderr('Passwords do not match');
+    } else {
       // ............ setloading
       setLoading(true);
        
-      toast('🦄 Wow so easy!', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-        });
-      
-        setTimeout(() => {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Register user
+          const user = userCredential.user;
+
+          // ...set loading
           setLoading(false);
-        }, 2000);
-  
+
+          // Redirect to chat page
+          toast.success('Registration Successful', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+
+          // .............Redirect to login page................. 
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+
+          if (errorCode === 'auth/weak-password') {
+            toast.error('Enter a strong Password', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+            });
+          }else if (errorCode === 'auth/email-already-in-use') {
+            toast.error('Email already exists', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+            });
+          }else {
+            toast.error('An error occurred: ' + errorMessage, {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+          });
+          }
+          //......set  loading
+          setLoading(false);
+        });
     }
   }
 
@@ -194,7 +257,6 @@ const Register = () => {
                 Register
               </button>
             }
-
 
             {/* Already have an account? Log In */}
             <p className="mt-2 text-center text-sm text-gray-600">

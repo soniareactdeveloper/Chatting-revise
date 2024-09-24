@@ -3,6 +3,9 @@ import './App.css'
 import RegisterPage from './Pages/RegisterPage'
 import ForgetPage from './Pages/ForgetPage'
 import LogInPage from './Pages/LogInPage'
+import { database } from './firebase.Config'
+
+
 
 function App() {
   const route = createBrowserRouter (

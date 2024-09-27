@@ -141,6 +141,10 @@ const Register = () => {
               transition: Bounce,
           });
           }
+<<<<<<< HEAD
+=======
+          //......set  loading....
+>>>>>>> 681869adca173868596073b5e0ab4c37c8de5096
           setLoading(false);
         });
     }

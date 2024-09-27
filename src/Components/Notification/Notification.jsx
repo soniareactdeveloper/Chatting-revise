@@ -30,7 +30,7 @@ const Notification = () => {
 
  // Fetching data from Realtime Database
     useEffect(()=>{
-      const starCountRef = ref(db, 'AcceptNotification/');
+      const starCountRef = ref(db,'AcceptNotification/');
         onValue(starCountRef, (snapshot) => {
           let arr = [];
           snapshot.forEach((item) => {
@@ -42,23 +42,27 @@ const Notification = () => {
         });
     },[db, sliceUser.uid])
 
+
+
  // Fetching data from Realtime Database
     useEffect(()=>{
       const starCountRef = ref(db, 'blockNotication/');
         onValue(starCountRef, (snapshot) => {
           let arr = [];
-          snapshot.forEach((item) => {
-            if(item.val().currentId === sliceUser.uid){
-              arr.push({...item.val(), key: item.key});
-            }
+          snapshot.forEach((data) => {
+          
+               arr.push(data.val());
+           
           });
           setBlockNotification(arr);
         });
     },[db, sliceUser.uid])
+
+ 
  
 
 
-
+ 
  
   return (
     <div className="flex flex-col items-center h-screen bg-yellow-200 p-4 w-full">
@@ -99,15 +103,17 @@ const Notification = () => {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 max-w-md w-full">
         {blockNotification.map((item) => (
           <div key={item.key} className="flex items-center bg-red-100 p-2 rounded shadow">
             <img
-              src={item.friendPhoto} // User's photo for the blocked notification
-              alt={item.friendName} // User's name for accessibility
-              className="w-10 h-10 rounded-full mr-2" // Tailwind classes for styling
+              src={item.friendPhoto} 
+              alt={item.friendName} 
+              className="w-10 h-10 rounded-full mr-2"
             />
-            <span className="text-red-800 font-semibold">{item.friendName}</span> has blocked you.
+            <div className="text-base">
+              <span className="text-red-800 font-semibold"> {item.currentName }</span> has blocked you.
+            </div>
           </div>
         ))}
       </div>

@@ -58,7 +58,7 @@ const Friends = () => {
     });
 
     // sent data to the block notification
-    set(ref(db, 'blockNotication/'), {
+    set(ref(db, 'blockNotication/' + blockData.key), {
       currentId : sliceUser.uid,
       currentName : sliceUser.displayName,
       currentPhoto : sliceUser.photoURL,

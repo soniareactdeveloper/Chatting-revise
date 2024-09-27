@@ -13,7 +13,7 @@ const LayoutOne = () => {
     useEffect(()=>{
       
       if(sliceUser == null){
-        navigate('/login')  // navigate to login page if the user data is null
+        navigate('/login')  
       }
     },[])
     

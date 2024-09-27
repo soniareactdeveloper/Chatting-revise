@@ -69,8 +69,8 @@ const UserCard = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-yellow-200 w-full">
-      <div className="max-w-sm w-full rounded-lg border-2 border-gray-300 shadow-lg bg-white">
+    <div className="flex justify-center items-center min-h-screen bg-yellow-200 w-full p-4">
+      <div className="w-full max-w-lg lg:max-w-md md:max-w-sm sm:max-w-xs mx-auto rounded-lg border-2 border-gray-300 shadow-lg bg-white">
         <h1 className="text-center text-2xl font-bold border-b-2 border-gray-300 py-4">
           UserCard
         </h1>

@@ -21,49 +21,40 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword]        = useState('');
   const [confirmPassworderr, setConfirmPassworderr]  = useState('');
 
-  // ====================== firebase functions =================
   const auth        = getAuth();
   const navigate    = useNavigate();
 
-  // password icon function
   const handleShow = () => {
     setShow(!show);
   }
 
-  // confirm password icon function
   const handleConfirmShow = () => {
     setConfirmShow(!confirmShow);
   }
 
-  // user functionality 
   const handleUser = (e) => {
     setUsername(e.target.value);
     setUsernameerr('');
   }
 
-  // email functionality
   const handleEmail = (e) => {
     setEmail(e.target.value);
     setEmailerr('');
   }
 
-  // password functionality
   const handlePassword = (e) => {
     setPassword(e.target.value);
     setPassworderr('');
   }
 
-  // confirm password functionality
   const handleConfirmPassword = (e) => {
     setConfirmPassword(e.target.value);
     setConfirmPassworderr('');
   }
 
-  // form validation function
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // condition for form validation
     if (!username) {
       setUsernameerr('Username is required');
     }
@@ -78,25 +69,19 @@ const Register = () => {
     }
     if (password !== confirmPassword) {
       setConfirmPassworderr('Passwords do not match');
-
     } else {
-      // ............ setloading
       setLoading(true);
        
       createUserWithEmailAndPassword(auth, email, confirmPassword)
         .then((userCredential) => {
-          // Register user
           const user = userCredential.user;
 
-
-          // .............Update a user's profile.................
           updateProfile(auth.currentUser, {
             displayName: username,
             photoURL:"https://media.istockphoto.com/id/1353379172/photo/cute-little-african-american-girl-looking-at-camera.jpg?s=612x612&w=0&k=20&c=RCOYytwS2nMGfEb80oyeiCcIiqMQu6wnTluAaxMBye4="
-          })
+          });
 
-          // Redirect to chat page
-          toast.success('Varify Your Email', {
+          toast.success('Verify Your Email', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -107,18 +92,13 @@ const Register = () => {
             theme: "light",
             transition: Bounce,
           });
-           
-          // ...set loading
-           setLoading(false);
-          // .............Redirect to login page................. 
+
+          setLoading(false);
           setTimeout(() => {
             navigate('/login');
           }, 2000);
 
-          //email varification
-          sendEmailVerification(auth.currentUser)
-
-
+          sendEmailVerification(auth.currentUser);
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -136,7 +116,7 @@ const Register = () => {
               theme: "dark",
               transition: Bounce,
             });
-          }else if (errorCode === 'auth/email-already-in-use') {
+          } else if (errorCode === 'auth/email-already-in-use') {
             toast.error('Email already exists', {
               position: "top-right",
               autoClose: 5000,
@@ -148,7 +128,7 @@ const Register = () => {
               theme: "dark",
               transition: Bounce,
             });
-          }else {
+          } else {
             toast.error('An error occurred: ' + errorMessage, {
               position: "top-right",
               autoClose: 3000,
@@ -161,20 +141,19 @@ const Register = () => {
               transition: Bounce,
           });
           }
-          //......set  loading
           setLoading(false);
         });
     }
   }
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-200">
-      <div className="main flex items-center justify-center w-3/4 mx-auto bg-white p-6">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-200 p-4 sm:p-6 md:p-8">
+      <div className="main flex flex-col md:flex-row items-center justify-center w-full max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
 
         {/* Register form section */}
-        <div className="w-1/2">
+        <div className="w-full md:w-1/2">
           <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow-lg max-w-sm mx-auto">
-            <h1 className="text-3xl font-bold text-center mb-2 text-yellow-600">Register</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-center mb-2 text-yellow-600">Register</h1>
 
             {/* Username input */}
             <div className="mb-2">
@@ -183,7 +162,7 @@ const Register = () => {
                 onChange={handleUser}
                 type="text"
                 id="username"
-                className="mt-1 block w-full p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
                 placeholder="Enter your username"
               />
               <p className="text-[14px] text-red-600 font-sans font-normal min-h-[20px]">{usernameerr}</p>
@@ -196,7 +175,7 @@ const Register = () => {
                 onChange={handleEmail}
                 type="email"
                 id="email"
-                className="mt-1 block w-full p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
                 placeholder="Enter your email"
               />
               <p className="text-[14px] text-red-600 font-sans font-normal min-h-[20px]">{emailerr}</p>
@@ -210,7 +189,7 @@ const Register = () => {
                   onChange={handlePassword}
                   type={show ? "text" : "password"}  // Toggle between text and password
                   id="password"
-                  className="mt-1 block w-full p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
                   placeholder="Enter your password"
                 />
                 {show ? (
@@ -236,7 +215,7 @@ const Register = () => {
                   onChange={handleConfirmPassword}
                   type={confirmShow ? "text" : "password"}  // Toggle between text and password
                   id="confirmPassword"
-                  className="mt-1 block w-full p-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:ring-yellow-400"
                   placeholder="Confirm your password"
                 />
                 {confirmShow ? (
@@ -256,11 +235,11 @@ const Register = () => {
 
             {/* Submit button */}
             {
-              loading?
+              loading ?
               <div className="w-full h-[40px] py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 flex justify-center items-center">
-                  <BarLoader/>
-                </div>
-                :
+                <BarLoader/>
+              </div>
+              :
               <button
                 type="submit"
                 className="w-full py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400"

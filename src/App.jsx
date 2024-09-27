@@ -11,6 +11,9 @@ import Friends from './Components/Friends/Friends'
 import FriendRequest from './Components/FriendRequest/FriendRequest'
 import Notification from './Components/Notification/Notification'
 import Block from './Components/Block/Block'
+import Chat from './Pages/Chat'
+
+
 
 
 
@@ -28,6 +31,7 @@ function App() {
           <Route path='/friend-request'  element={<FriendRequest/>}/>
           <Route path='/notifications'  element={<Notification/>}/>
           <Route path='/block'          element={<Block/>}/>
+          <Route path='/chat'          element={<Chat/>}/>   
         </Route>
       </Route>
     )

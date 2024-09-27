@@ -8,49 +8,49 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 
 const Register = () => {
-  // state declaration
-  const [show, setShow]                              = useState(false);
-  const [confirmShow, setConfirmShow]                = useState(false);
-  const [loading,setLoading]                         = useState(false);
-  const [username, setUsername]                      = useState('');
-  const [usernameerr, setUsernameerr]                = useState('');
-  const [email, setEmail]                            = useState('');
-  const [emailerr, setEmailerr]                      = useState('');
-  const [password, setPassword]                      = useState('');
-  const [passworderr, setPassworderr]                = useState('');
-  const [confirmPassword, setConfirmPassword]        = useState('');
-  const [confirmPassworderr, setConfirmPassworderr]  = useState('');
+  // State declaration
+  const [show, setShow] = useState(false);
+  const [confirmShow, setConfirmShow] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [usernameerr, setUsernameerr] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailerr, setEmailerr] = useState('');
+  const [password, setPassword] = useState('');
+  const [passworderr, setPassworderr] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPassworderr, setConfirmPassworderr] = useState('');
 
-  const auth        = getAuth();
-  const navigate    = useNavigate();
+  const auth = getAuth();
+  const navigate = useNavigate();
 
   const handleShow = () => {
     setShow(!show);
-  }
+  };
 
   const handleConfirmShow = () => {
     setConfirmShow(!confirmShow);
-  }
+  };
 
   const handleUser = (e) => {
     setUsername(e.target.value);
     setUsernameerr('');
-  }
+  };
 
   const handleEmail = (e) => {
     setEmail(e.target.value);
     setEmailerr('');
-  }
+  };
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
     setPassworderr('');
-  }
+  };
 
   const handleConfirmPassword = (e) => {
     setConfirmPassword(e.target.value);
     setConfirmPassworderr('');
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,14 +71,14 @@ const Register = () => {
       setConfirmPassworderr('Passwords do not match');
     } else {
       setLoading(true);
-       
+
       createUserWithEmailAndPassword(auth, email, confirmPassword)
         .then((userCredential) => {
           const user = userCredential.user;
 
           updateProfile(auth.currentUser, {
             displayName: username,
-            photoURL:"https://media.istockphoto.com/id/1353379172/photo/cute-little-african-american-girl-looking-at-camera.jpg?s=612x612&w=0&k=20&c=RCOYytwS2nMGfEb80oyeiCcIiqMQu6wnTluAaxMBye4="
+            photoURL: "https://media.istockphoto.com/id/1353379172/photo/cute-little-african-american-girl-looking-at-camera.jpg?s=612x612&w=0&k=20&c=RCOYytwS2nMGfEb80oyeiCcIiqMQu6wnTluAaxMBye4="
           });
 
           toast.success('Verify Your Email', {
@@ -139,21 +139,15 @@ const Register = () => {
               progress: undefined,
               theme: "dark",
               transition: Bounce,
-          });
+            });
           }
-<<<<<<< HEAD
-=======
-          //......set  loading....
->>>>>>> 681869adca173868596073b5e0ab4c37c8de5096
-          setLoading(false);
         });
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-200 p-4 sm:p-6 md:p-8">
       <div className="main flex flex-col md:flex-row items-center justify-center w-full max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-
         {/* Register form section */}
         <div className="w-full md:w-1/2">
           <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow-lg max-w-sm mx-auto">
@@ -239,17 +233,18 @@ const Register = () => {
 
             {/* Submit button */}
             {
-              loading ?
-              <div className="w-full h-[40px] py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 flex justify-center items-center">
-                <BarLoader/>
-              </div>
-              :
-              <button
-                type="submit"
-                className="w-full py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400"
-              >
-                Register
-              </button>
+              loading ? (
+                <div className="w-full h-[40px] py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 flex justify-center items-center">
+                  <BarLoader />
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400"
+                >
+                  Register
+                </button>
+              )
             }
 
             {/* Already have an account? Log In */}

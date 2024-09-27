@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 const Forget = () => {
   const [email, setEmail] = useState('');
   const [emailErr, setEmailErr] = useState('');
+
+  // ========= firebase setup
+  const auth = getAuth();
 
   // Handle email input change
   const handleEmailChange = (e) => {
@@ -18,6 +22,17 @@ const Forget = () => {
     // Validate email
     if (!email) {
       setEmailErr('Email is required');
+    }else {
+      sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        alert('password code has been sent successfully')
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
     }
 
   };
@@ -56,7 +71,7 @@ const Forget = () => {
             {/* Back to login link */}
             <p className="mt-6 text-center text-sm text-gray-600">
               Remembered your password?{" "}
-              <Link to="/" className="text-yellow-600 hover:text-yellow-700 font-semibold">
+              <Link to="/login" className="text-yellow-600 hover:text-yellow-700 font-semibold">
                 Log In
               </Link>
             </p>

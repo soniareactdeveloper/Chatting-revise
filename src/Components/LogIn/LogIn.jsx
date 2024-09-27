@@ -1,11 +1,16 @@
 import Lottie from "lottie-react";
-import logAnimation from "../../../public/animation/login.json";
-import { Link } from "react-router-dom"; 
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; 
 import { ImEye, ImEyeBlocked } from "react-icons/im";
 import { BarLoader } from "react-spinners";
-import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from "react-redux";
+import { userData } from "../../Slices/UserSlice";
+import logAnimation from "../../../public/animation/login.json";
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
+
 
 const LogIn = () => {
   // State declaration with initial values
@@ -15,54 +20,121 @@ const LogIn = () => {
   const [emailErr, setEmailErr]       = useState('');
   const [password, setPassword]       = useState('');
   const [passwordErr, setPasswordErr] = useState('');
+  const navigate                      = useNavigate();
+
+  
+  // Dispatch to send data from Redux
+  const dispatch = useDispatch();
+
+
+  // Firebase authentication
+  const auth      = getAuth();
+  const db        = getDatabase();
+
 
   // Icon functionality to toggle password visibility
   const handleShow = () => {
     setShow(!show);
   };
 
+
   // Update email state and clear error
   const handleEmail = (e) => {
     setEmail(e.target.value);
-    setEmailErr('');
+    setEmailErr('');  // Clear the error when typing starts
   };
 
   // Update password state and clear error
   const handlePassword = (e) => {
     setPassword(e.target.value);
-    setPasswordErr('');
+    setPasswordErr('');  // Clear the error when typing starts
   };
 
-  // Form validation functionality
+  // Form validation and submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-  //  condition 
-    if (!email) {
-      setEmailErr('Email is required');
-    }
-    if (!password) {
-      setPasswordErr('Password is required');
-    }else{
-      // .............Loading 
+    // Simple validation
+    if (!email || !password) {
+      if (!email) setEmailErr('Email is required');
+      
+      if (!password) setPasswordErr('Password is required');
+      
+    }else {
+      // Set loading state to true when form is being submitted
       setLoading(true);
+  
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+  
+          // Check if email is verified
+          if (!user.emailVerified) {
+            toast.error('Email not verified', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+              transition: Bounce,
+            });
+            setLoading(false);
+            return;
+          }
+  
+          // Successful login toast
+          toast.success('Login Successful', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+  
+          // Send data to Redux
+          dispatch(userData(user));
 
-      toast('🦄 Wow so easy!', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
+
+          // set  loading 
+          setLoading(false);
+  
+          // Redirect after successful login
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+  
+          // setting data in local storage
+          localStorage.setItem('userData', JSON.stringify(user))
+  
+           // set user data to database
+           set(ref(db, 'Allusers/' + user.uid), {
+            userName: user.displayName,
+            userPhoto: user.photoURL,
+            userId: user.uid
+          })
+        })
+        .catch((error) => {
+          setLoading(false);
+          toast.error(error.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+          });
         });
 
-
-        setTimeout(() => {
-           setLoading(false);
-        }, 2000);
     }
   };
 
@@ -135,7 +207,7 @@ const LogIn = () => {
 
             {/* Submit button */}
             {
-              loading?
+              loading ?
                 <div className="w-full h-[40px] py-3 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-yellow-400 flex justify-center items-center">
                   <BarLoader/>
                 </div>
@@ -164,4 +236,3 @@ const LogIn = () => {
 };
 
 export default LogIn;
-

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { BarLoader } from "react-spinners";
 import { Bounce, ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 
 const Register = () => {
   // state declaration
@@ -78,20 +78,25 @@ const Register = () => {
     }
     if (password !== confirmPassword) {
       setConfirmPassworderr('Passwords do not match');
+
     } else {
       // ............ setloading
       setLoading(true);
        
-      createUserWithEmailAndPassword(auth, email, password)
+      createUserWithEmailAndPassword(auth, email, confirmPassword)
         .then((userCredential) => {
           // Register user
           const user = userCredential.user;
 
-          // ...set loading
-          setLoading(false);
+
+          // .............Update a user's profile.................
+          updateProfile(auth.currentUser, {
+            displayName: username,
+            photoURL:"https://media.istockphoto.com/id/1353379172/photo/cute-little-african-american-girl-looking-at-camera.jpg?s=612x612&w=0&k=20&c=RCOYytwS2nMGfEb80oyeiCcIiqMQu6wnTluAaxMBye4="
+          })
 
           // Redirect to chat page
-          toast.success('Registration Successful', {
+          toast.success('Varify Your Email', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
@@ -102,11 +107,17 @@ const Register = () => {
             theme: "light",
             transition: Bounce,
           });
-
+           
+          // ...set loading
+           setLoading(false);
           // .............Redirect to login page................. 
           setTimeout(() => {
-            navigate('/');
+            navigate('/login');
           }, 2000);
+
+          //email varification
+          sendEmailVerification(auth.currentUser)
+
 
         })
         .catch((error) => {
@@ -261,7 +272,7 @@ const Register = () => {
             {/* Already have an account? Log In */}
             <p className="mt-2 text-center text-sm text-gray-600">
               Already have an account?{" "}
-              <Link to="/" className="text-yellow-600 hover:text-yellow-700 font-semibold">
+              <Link to="/login" className="text-yellow-600 hover:text-yellow-700 font-semibold">
                 Log In
               </Link>
             </p>

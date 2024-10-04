@@ -65,7 +65,7 @@ const Notification = () => {
  
  
   return (
-    <div className="flex flex-col items-center h-screen bg-yellow-200 p-4 w-full">
+    <div className="flex flex-col items-center h-screen bg-yellow-200 p-4 w-full overflow-y-scroll">
       <h1 className="text-3xl font-bold mb-6">Notifications</h1>
       <div className="max-w-md w-full">
         {/* Mapping through notifications */}

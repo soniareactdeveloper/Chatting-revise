@@ -1,13 +1,66 @@
 import { FaPhone, FaVideo, FaEllipsisV } from 'react-icons/fa'; // Icons for call, video call, and options
 import { useSelector } from 'react-redux'; // To access user data from Redux
+import './Inbox.css';
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
+import { useEffect, useState } from 'react';
 
 const Inbox = () => {
-  // Accessing the user data from Redux (you can replace this with static data if not using Redux)
+  const userData = useSelector((state) => state.chatData.chatUserData);
   const sliceUsers = useSelector((state) => state.counter.value);
+  const db = getDatabase();
+
+  const [messages, setMessages] = useState('');
+  const [chatMsg, setChatMsg] = useState([]);
+
+  // Realtime date and time
+  function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
+  }
+
+  // Sending messages to Firebase
+  const handleSend = () => {
+    set(push(ref(db, 'message/')), {
+      senderId: sliceUsers.uid,
+      receiverId: userData.friendId,
+      message: messages,
+      megTime: formatAMPM(new Date()), // Sending formatted time along with the message
+    });
+    setMessages(''); // Clear the input field after sending the message
+  };
+
+  const handleKey = (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
+  };
+
+  // Getting messages from Firebase
+  useEffect(() => {
+    const starCountRef = ref(db, 'message/');
+    onValue(starCountRef, (snapshot) => {
+      let arr = [];
+      snapshot.forEach((item) => {
+        if (
+          (item.val().senderId === sliceUsers.uid && item.val().receiverId === userData.friendId) ||
+          (item.val().receiverId === sliceUsers.uid && item.val().senderId === userData.friendId)
+        ) {
+          arr.push({ ...item.val(), key: item.key });
+        }
+      });
+      setChatMsg(arr);
+    });
+  }, [userData, sliceUsers]);
 
   return (
     <div
-      className="w-[715px] h-screen mx-auto bg-yellow-100 flex flex-col absolute left-[44%]"
+      className="w-[780px] h-screen mx-auto bg-yellow-100 flex flex-col absolute left-[44%]"
       style={{
         overflowY: 'hidden', // Prevents default scrollbar on the main container
       }}
@@ -17,13 +70,13 @@ const Inbox = () => {
         {/* User Info */}
         <div className="flex items-center space-x-3">
           <img
-            src={sliceUsers?.photoURL || 'https://via.placeholder.com/50'}
+            src={userData?.friendPhoto || 'https://via.placeholder.com/50'}
             alt="User"
             className="w-10 h-10 rounded-full"
           />
           <div>
             <h1 className="text-lg font-semibold text-gray-800">
-              {sliceUsers?.displayName || 'User Name'}
+              {userData?.friendName || 'User Name'}
             </h1>
             <p className="text-sm text-gray-600">Online</p>
           </div>
@@ -38,97 +91,58 @@ const Inbox = () => {
 
       {/* Middle Chat Section (Messages) */}
       <div
-        className="flex-grow p-4 overflow-y-scroll h-96" // Enables scrolling with defined height
+        className="flex-grow p-4 overflow-y-scroll h-96"
         style={{
           scrollbarWidth: 'thin', // Firefox
           scrollbarColor: '#fbbf24 #fef9c3', // Firefox thumb and track colors
         }}
       >
-        {/* Custom scrollbar for WebKit browsers */}
         <style>{`
-          /* For WebKit browsers (Chrome, Safari) */
           .flex-grow::-webkit-scrollbar {
-            width: 8px; /* Width of the scrollbar */
+            width: 8px;
           }
           .flex-grow::-webkit-scrollbar-track {
-            background: #fef9c3; /* Yellow-100 for scrollbar track */
+            background: #fef9c3;
           }
           .flex-grow::-webkit-scrollbar-thumb {
-            background-color: #fbbf24; /* Yellow-300 for scrollbar thumb */
-            border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+            background-color: #fbbf24;
+            border-radius: 10px;
           }
         `}</style>
 
-        {/* Friend Message (Left Aligned) */}
-        <div className="flex items-start space-x-3 mb-4">
-          <img
-            src={sliceUsers?.photoURL || 'https://via.placeholder.com/40'}
-            alt="Friend"
-            className="w-8 h-8 rounded-full"
-          />
-          <div className="bg-gray-200 p-3 rounded-lg shadow-md">
-            <p className="text-gray-700">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-
-        {/* User Message (Right Aligned) */}
-        <div className="flex items-end justify-end mb-2">
-          <div className="bg-yellow-300 p-3 rounded-lg shadow-md">
-            <p className="text-gray-800">Lorem ipsum dolor sit amet.</p>
-          </div>
-        </div>
-
-        {/* Additional Messages */}
-        {/* Friend Message */}
-        <div className="flex items-start space-x-3 mb-4">
-          <img
-            src={sliceUsers?.photoURL || 'https://via.placeholder.com/40'}
-            alt="Friend"
-            className="w-8 h-8 rounded-full"
-          />
-          <div className="bg-gray-200 p-3 rounded-lg shadow-md">
-            <p className="text-gray-700">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          </div>
-        </div>
-
-        {/* User Message */}
-        <div className="flex items-end justify-end mb-2">
-          <div className="bg-yellow-300 p-3 rounded-lg shadow-md">
-            <p className="text-gray-800">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          </div>
-        </div>
-
-        {/* Additional Friend Messages */}
-        {/* Repeat as needed */}
-        {[...Array(5)].map((_, index) => (
-          <div key={index} className="flex items-start space-x-3 mb-4">
-            <img
-              src={sliceUsers?.photoURL || 'https://via.placeholder.com/40'}
-              alt="Friend"
-              className="w-8 h-8 rounded-full"
-            />
-            <div className="bg-gray-200 p-3 rounded-lg shadow-md">
-              <p className="text-gray-700">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        {/* Render Messages */}
+        <div className="flex flex-col mb-6">
+          {chatMsg.map((item) => (
+            <div
+              key={item.key}
+              className={`p-3 mt-3 rounded-lg shadow-md ${item.senderId === sliceUsers.uid ? 'bg-yellow-300 self-end' : 'bg-white self-start'}`}
+            >
+              <p className={item.senderId === sliceUsers.uid ? "text-gray-800" : "text-gray-700"}>
+                {item.message}
+              </p>
+              {/* Display the message time */}
+              <p className="text-xs text-gray-500 mt-1">
+                {item.megTime} {/* Message time is displayed here */}
+              </p>
             </div>
-          </div>
-        ))}
-
-        {/* User Message Example */}
-        <div className="flex items-end justify-end mb-2">
-          <div className="bg-yellow-300 p-3 rounded-lg shadow-md">
-            <p className="text-gray-800">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Bottom Input Section */}
       <div className="p-4 bg-yellow-200 rounded-b-lg flex items-center space-x-2">
         <input
+          value={messages}
+          onChange={(e) => setMessages(e.target.value)}
+          onKeyDown={handleKey}
           type="text"
           placeholder="Type a message..."
           className="flex-grow p-2 bg-white rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
         />
-        <button className="bg-yellow-400 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-500">
+        <button
+          onClick={handleSend}
+          className="bg-yellow-400 text-white px-4 py-2 rounded-lg shadow-md hover:bg-yellow-500"
+        >
           Send
         </button>
       </div>
@@ -137,3 +151,4 @@ const Inbox = () => {
 };
 
 export default Inbox;
+

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
-import { FaBars } from 'react-icons/fa'; // Import an icon for the hamburger menu
+import { FaBars, FaSignOutAlt } from 'react-icons/fa'; // Import the logout icon
 
 const Navbar = () => {
   // Getting data from redux
@@ -15,6 +15,21 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  // Function to handle logout (You can expand this logic to actually log the user out)
+  const handleLogout = () => {
+
+    // Clear local storage
+    localStorage.removeItem('userData');
+    
+    // reload to the login page
+    location.reload();
+  };
+
+
+
+
+
+
   return (
     <div className="flex">
       {/* Hamburger icon for small screens */}
@@ -26,9 +41,12 @@ const Navbar = () => {
 
       {/* Sidebar navigation */}
       <div
-        className={`w-40 md:w-64 h-screen bg-yellow-100 p-4 fixed top-0 left-0 z-50 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out sm:translate-x-0`}
+        className={`w-40 md:w-64 h-screen bg-yellow-100 p-4 fixed top-0 left-0 z-50 transform ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        } transition-transform duration-300 ease-in-out sm:translate-x-0`}
       >
-        <div className='mt-4 mb-4 text-center'>
+        {/* User Info */}
+        <div className="mt-4 mb-4 text-center">
           <img
             src={sliceUsers?.photoURL}
             alt="User"
@@ -107,7 +125,6 @@ const Navbar = () => {
             Block
           </NavLink>
 
-          {/* Chat option */}
           <NavLink
             to="/chat"
             className={({ isActive }) =>
@@ -119,6 +136,17 @@ const Navbar = () => {
             Chat
           </NavLink>
         </nav>
+
+        {/* Logout button at the bottom */}
+        <div className="mt-28 pt-4">
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center w-full bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-300"
+          >
+            <FaSignOutAlt className="mr-2" />
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Overlay to close the menu when clicked outside on small screens */}
@@ -133,4 +161,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
